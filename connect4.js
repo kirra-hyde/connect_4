@@ -12,6 +12,7 @@ const HEIGHT = 6;
 
 let currPlayer = 1; // active player: 1 or 2
 const board = []; // array of rows, each row is array of cells  (board[y][x])
+let finished = false;
 
 
 /** makeBoard: create in-JS board structure:
@@ -89,15 +90,22 @@ function placeInTable(y, x) {
   cell.append(piece);
 }
 
-/** endGame: announce game end */
+/** endGame: announce game end and disable clicks*/
 
 function endGame(msg) {
-  alert(msg);
+  finished = true;
+  const endBox = document.getElementById("end-message");
+  endBox.innerText = msg;
 }
 
 /** handleClick: handle click of column top to play piece */
 
 function handleClick(evt) {
+
+  //checks that game isn't over
+  if (finished) {
+    return;
+  }
 
   // get x from ID of clicked cell
   const x = parseInt(evt.target.id);
