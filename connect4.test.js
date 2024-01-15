@@ -10,7 +10,7 @@ beforeEach(function () {
   // reset & make html board
   let htmlBoard = document.getElementById('board');
   htmlBoard.innerHTML = "";
-  makeHtmlBoard();
+  makeHtmlBoard(board);
 
   // reset currPlayer
   currPlayer = 1;
@@ -81,11 +81,11 @@ describe('placeInTable', function () {
   it('adds piece to the html board', function () {
     const x = 0;
     const y = HEIGHT - 1;
-    const spot = document.getElementById(`c-${y}-${x}`);
+    const spot = document.getElementById(`cell-${y}-${x}`);
 
-    expect(spot.innerHTML).toEqual("")
+    expect(spot.innerHTML).toEqual("");
     placeInTable(y, x);
-    expect(spot.innerHTML).toEqual(`<div class="piece p${currPlayer}"></div>`)
+    expect(spot.innerHTML).toEqual(`<div class="piece p${currPlayer}"></div>`);
   });
 });
 
@@ -93,7 +93,7 @@ describe('placeInTable', function () {
 describe('handleClick', function () {
 
   it('it switches players', function () {
-    const evt = { target: { id: "top-0" } };
+    const evt = { target: { id: "0-top" } };
 
     expect(currPlayer).toEqual(1);
 
@@ -108,7 +108,7 @@ describe('handleClick', function () {
     let y = HEIGHT - 1;
     const x = 0;
 
-    const evt = { target: { id: `top-${x}` } };
+    const evt = { target: { id: `${x}-top` } };
 
     // spot on board is empty
     // after one call to handleClick, gets updated with player 1
@@ -126,29 +126,30 @@ describe('handleClick', function () {
     expect(board[y][x]).toEqual(2);
   });
 
-  it('it updates html board with correct pieces', function () {
+  it('it updates html board with correct pieces', async function () {
     let y = HEIGHT - 1;
     const x = 0;
 
-    let spot = document.getElementById(`c-${y}-${x}`);
-    const evt = { target: { id: `top-${x}` } };
+    let spot = document.getElementById(`cell-${y}-${x}`);
+    const evt = { target: { id: `${x}-top` } };
 
     // spot on html board empty
     // after one call to handleClick, gets updated with player 1 piece
-    expect(spot.innerHTML).toEqual("")
+
+    expect(spot.innerHTML).toEqual("");
     handleClick(evt);
-    expect(spot.innerHTML).toEqual('<div class="piece p1"></div>')
+    expect(spot.innerHTML).toEqual('<div class="piece p1"></div>');
 
     // increment y to next empty row for x
     // get new spot
     y = HEIGHT - 2;
-    spot = document.getElementById(`c-${y}-${x}`);
+    spot = document.getElementById(`cell-${y}-${x}`);
 
     // spot on html board empty
     // after next call to handleClick, gets updated with player 2 piece
-    expect(spot.innerHTML).toEqual("")
+    expect(spot.innerHTML).toEqual("");
     handleClick(evt);
-    expect(spot.innerHTML).toEqual('<div class="piece p2"></div>')
+    expect(spot.innerHTML).toEqual('<div class="piece p2"></div>');
   });
 });
 
