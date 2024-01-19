@@ -52,8 +52,7 @@ class Game {
     // make row above game board and make it listen for clicks
     const top = document.createElement("tr");
     top.setAttribute("id", "column-top");
-    const handleClick = this.handleClick.bind(this);
-    top.addEventListener("click", handleClick);
+    top.addEventListener("click", this.handleClick.bind(this));
 
     // add cells to row above game board corresponding to game board columns
     for (let x = 0; x < this.width; x++) {
@@ -80,9 +79,9 @@ class Game {
   /** findSpotForCol: given column x, return bottom empty y (null if filled) */
 
   findSpotForCol(x) {
-    console.log("in findSpot");
 
     for (let y = this.height - 1; y >= 0; y--) {
+
       if (this.board[y][x] === null) {
         return y;
       }
@@ -116,7 +115,6 @@ class Game {
     const x = parseInt(evt.target.id);
 
     // get next spot in column (if none, ignore click)
-    console.log("x is:", x);
     const y = this.findSpotForCol(x);
     if (y === null) {
       return;
@@ -147,26 +145,20 @@ class Game {
 
   checkForWin() {
 
-    // get properties of this game instance, so "_win" can access them
-    const height = this.height;
-    const width = this.width;
-    const currPlayer = this.currPlayer;
-    const board = this.board;
-
     /** _win:
     * takes input array of 4 cell coordinates [ [y, x], [y, x], [y, x], [y, x] ]
     * returns true if all are legal coordinates & all cells match currPlayer
     */
-    function _win(cells) {
+    const _win = cells => {
 
       for (let cell of cells) {
         const [y, x] = cell;
 
         if (y < 0 ||
-          y >= height ||
+          y >= this.height ||
           x < 0 ||
-          x >= width ||
-          board[y][x] !== currPlayer
+          x >= this.width ||
+          this.board[y][x] !== this.currPlayer
         ) {
           return false;
         }
@@ -203,4 +195,5 @@ class Game {
 
 
 new Game();
+
 
