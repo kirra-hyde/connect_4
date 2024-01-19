@@ -200,5 +200,5 @@ class Game {
 
 
 const startButton = document.getElementById("start");
-startButton.addEventListener("click", () => new Game);
+startButton.addEventListener("click", () => new Game());
 
