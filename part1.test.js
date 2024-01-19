@@ -1,35 +1,27 @@
 "use strict";
 
+let testGame;
+
 beforeEach(function () {
   console.log("Run once before each test starts");
 
-  // reset & make in-memory board
-  board.length = 0;
-  makeBoard();
-
-  // reset & make html board
-  let htmlBoard = document.getElementById('board');
-  htmlBoard.innerHTML = "";
-  makeHtmlBoard(board);
-
-  // reset currPlayer
-  currPlayer = 1;
+  testGame = new Game(6, 7);
 });
 
 
 describe('makeBoard', function () {
 
   it('makes the in-memory board', function () {
-    expect(board.length).toEqual(HEIGHT);
+    expect(testGame.board.length).toEqual(testGame.height);
 
-    for (const row of board) {
-      expect(row.length).toEqual(WIDTH);
+    for (const row of testGame.board) {
+      expect(row.length).toEqual(testGame.width);
     }
   });
 
   it('in-memory board rows should have unique identity', function () {
-    const rows = new Set(board);
-    expect(rows.size).toEqual(board.length);
+    const rows = new Set(testGame.board);
+    expect(rows.size).toEqual(testGame.board.length);
   });
 });
 
@@ -40,10 +32,10 @@ describe('makeHtmlBoard', function () {
     let htmlBoard = document.getElementById('board');
 
     // num rows should be HEIGHT + 1 to account for clickable top row
-    expect(htmlBoard.rows.length).toEqual(HEIGHT + 1);
+    expect(htmlBoard.rows.length).toEqual(testGame.height + 1);
 
     for (const tableRow of htmlBoard.rows) {
-      expect(tableRow.cells.length).toEqual(WIDTH);
+      expect(tableRow.cells.length).toEqual(testGame.width);
     }
   });
 });
@@ -52,26 +44,26 @@ describe('makeHtmlBoard', function () {
 describe('findSpotForCol', function () {
 
   it('finds the next available spot in column', function () {
-    const y = HEIGHT - 1;
+    const y = testGame.height - 1;
     const x = 0;
 
-    expect(findSpotForCol(x)).toEqual(y);
+    expect(testGame.findSpotForCol(x)).toEqual(y);
 
-    board[y][x] = "filled";
+    testGame.board[y][x] = "filled";
 
-    expect(findSpotForCol(x)).toEqual(y - 1);
+    expect(testGame.findSpotForCol(x)).toEqual(y - 1);
   });
 
   it('returns null if column filled', function () {
     let y = 0;
     const x = 1;
 
-    while (y < HEIGHT) {
-      board[y][x] = "filled";
+    while (y < testGame.height) {
+      testGame.board[y][x] = "filled";
       y++;
     }
 
-    expect(findSpotForCol(x)).toEqual(null);
+    expect(testGame.findSpotForCol(x)).toEqual(null);
   });
 });
 
@@ -80,12 +72,14 @@ describe('placeInTable', function () {
 
   it('adds piece to the html board', function () {
     const x = 0;
-    const y = HEIGHT - 1;
+    const y = testGame.height - 1;
     const spot = document.getElementById(`cell-${y}-${x}`);
 
     expect(spot.innerHTML).toEqual("");
-    placeInTable(y, x);
-    expect(spot.innerHTML).toEqual(`<div class="piece p${currPlayer}"></div>`);
+    testGame.placeInTable(y, x);
+    expect(spot.innerHTML).toEqual(
+      `<div class="piece p${testGame.currPlayer}"></div>`
+    );
   });
 });
 
@@ -95,61 +89,60 @@ describe('handleClick', function () {
   it('it switches players', function () {
     const evt = { target: { id: "0-top" } };
 
-    expect(currPlayer).toEqual(1);
+    expect(testGame.currPlayer).toEqual(1);
 
-    handleClick(evt);
-    expect(currPlayer).toEqual(2);
+    testGame.handleClick(evt);
+    expect(testGame.currPlayer).toEqual(2);
 
-    handleClick(evt);
-    expect(currPlayer).toEqual(1);
+    testGame.handleClick(evt);
+    expect(testGame.currPlayer).toEqual(1);
   });
 
   it('it updates in-memory board with correct player', function () {
-    let y = HEIGHT - 1;
+    let y = testGame.height - 1;
     const x = 0;
 
     const evt = { target: { id: `${x}-top` } };
 
     // spot on board is empty
     // after one call to handleClick, gets updated with player 1
-    expect(board[y][x]).toEqual(null);
-    handleClick(evt);
-    expect(board[y][x]).toEqual(1);
+    expect(testGame.board[y][x]).toEqual(undefined);
+    testGame.handleClick(evt);
+    expect(testGame.board[y][x]).toEqual(1);
 
     // increment y to next unfilled row for x
-    y = HEIGHT - 2;
+    y = testGame.height - 2;
 
     // spot on board is empty
     // after next call to handleClick, gets updated with player 2
-    expect(board[y][x]).toEqual(null);
-    handleClick(evt);
-    expect(board[y][x]).toEqual(2);
+    expect(testGame.board[y][x]).toEqual(undefined);
+    testGame.handleClick(evt);
+    expect(testGame.board[y][x]).toEqual(2);
   });
 
-  it('it updates html board with correct pieces', async function () {
-    let y = HEIGHT - 1;
+  it('it updates html board with correct pieces', function () {
+    let y = testGame.height - 1;
     const x = 0;
 
     let spot = document.getElementById(`cell-${y}-${x}`);
-    const evt = { target: { id: `${x}-top` } };
+    const evt = { target: { id: x } };
 
     // spot on html board empty
     // after one call to handleClick, gets updated with player 1 piece
-
     expect(spot.innerHTML).toEqual("");
-    handleClick(evt);
-    expect(spot.innerHTML).toEqual('<div class="piece p1"></div>');
+    testGame.handleClick(evt);
+    expect(spot.innerHTML).toEqual('<div class="piece p1"></div>')
 
     // increment y to next empty row for x
     // get new spot
-    y = HEIGHT - 2;
+    y = testGame.height - 2;
     spot = document.getElementById(`cell-${y}-${x}`);
 
     // spot on html board empty
     // after next call to handleClick, gets updated with player 2 piece
     expect(spot.innerHTML).toEqual("");
-    handleClick(evt);
-    expect(spot.innerHTML).toEqual('<div class="piece p2"></div>');
+    testGame.handleClick(evt);
+    expect(spot.innerHTML).toEqual('<div class="piece p2"></div>')
   });
 });
 
@@ -157,15 +150,15 @@ describe('handleClick', function () {
 describe('checkForWin', function () {
 
   it('returns undefined if no winner', function () {
-    expect(checkForWin()).toEqual(undefined);
+    expect(testGame.checkForWin()).toEqual(undefined);
   });
 
   it('returns true if there is a winner', function () {
-    board[0][1] = 1;
-    board[0][2] = 1;
-    board[0][3] = 1;
-    board[0][4] = 1;
+    testGame.board[0][1] = 1;
+    testGame.board[0][2] = 1;
+    testGame.board[0][3] = 1;
+    testGame.board[0][4] = 1;
 
-    expect(checkForWin()).toEqual(true);
+    expect(testGame.checkForWin()).toEqual(true);
   });
 });
