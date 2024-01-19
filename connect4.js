@@ -44,10 +44,13 @@ class Game {
   }
 
 
-  /** Make HTML table with a row of column tops */
+  /** Reset DOM.  Then, make HTML table with a row of column tops */
 
   makeHtmlBoard() {
     const htmlBoard = document.getElementById('board');
+    htmlBoard.innerHTML = "";
+    document.getElementById("end-message").innerHTML = "";
+    startButton.style.display = "none";
 
     // make row above game board and make it listen for clicks
     const top = document.createElement("tr");
@@ -190,10 +193,12 @@ class Game {
     this.finished = true;
     const endBox = document.getElementById("end-message");
     endBox.innerText = msg;
+    startButton.innerText = "Play again?";
+    startButton.style.display = "block";
   }
 }
 
 
-new Game();
-
+const startButton = document.getElementById("start");
+startButton.addEventListener("click", () => new Game);
 
