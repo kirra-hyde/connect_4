@@ -2,18 +2,16 @@
 
 /** Game Players
  *
- * Players have colors and player numbers.
- * They're meant to be passed into Game objects.
+ * Players have colors. They're meant to be passed into Game objects.
  */
 
 class Player {
-  constructor(color, num) {
+  constructor(color) {
     if (!CSS.supports("background-color", color)) {
       throw new Error(`${color} is not a valid color`);
     }
 
     this.color = color;
-    this.num = num;
   }
 }
 
@@ -44,6 +42,14 @@ class Game {
     this.finished = false; //is the game over? true or false
 
     this.makeHtmlBoard();
+    this.colorsMap = {
+      aqua: "Blue",
+      crimson: "Red",
+      gold: "Yellow",
+      darkviolet: "Purple",
+      deeppink: "Pink",
+      springgreen: "Green"
+    };
   }
 
 
@@ -146,7 +152,7 @@ class Game {
 
     // check for win
     if (this.checkForWin()) {
-      this.endGame(`Player ${this.currPlayer.num} won!`);
+      this.endGame(`${this.colorsMap[this.currPlayer.color] || this.currPlayer.color} player wins!`);
       return;
     }
 
@@ -184,7 +190,7 @@ class Game {
         }
       }
       return true;
-    }
+    };
 
     // get check list of 4 cells (starting) here for each four directions
     for (let y = 0; y < this.height; y++) {
@@ -228,8 +234,8 @@ class Game {
     const errorMessage = document.getElementById("error-msg");
 
     if (p1Color === p2Color) {
-    errorMessage.innerText = "Player 1 and Player 2 must choose different colors";
-    return;
+      errorMessage.innerText = "Player 1 and Player 2 must choose different colors";
+      return;
     }
 
     errorMessage.innerText = "";
@@ -237,8 +243,8 @@ class Game {
     startScreen.style.display = "none";
 
 
-    const p1 = new Player(p1Color, 1);
-    const p2 = new Player(p2Color, 2);
+    const p1 = new Player(p1Color);
+    const p2 = new Player(p2Color);
     new Game(p1, p2);
   }
 }

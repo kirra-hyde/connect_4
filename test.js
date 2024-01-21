@@ -6,6 +6,7 @@ let testP2;
 
 beforeEach(function () {
   console.log("Run once before each test starts");
+  showSelectionScreen();
 
   testP1 = new Player("teal");
   testP2 = new Player("purple");
@@ -111,7 +112,7 @@ describe('handleClick', function () {
 
     // spot on board is empty
     // after one call to handleClick, gets updated with player 1
-    expect(testGame.board[y][x]).toEqual(undefined);
+    expect(testGame.board[y][x]).toEqual(null);
     testGame.handleClick(evt);
     expect(testGame.board[y][x]).toEqual(testP1);
 
@@ -120,7 +121,7 @@ describe('handleClick', function () {
 
     // spot on board is empty
     // after next call to handleClick, gets updated with player 2
-    expect(testGame.board[y][x]).toEqual(undefined);
+    expect(testGame.board[y][x]).toEqual(null);
     testGame.handleClick(evt);
     expect(testGame.board[y][x]).toEqual(testP2);
   });
@@ -169,5 +170,6 @@ describe('checkForWin', function () {
     testGame.board[0][4] = testP1;
 
     expect(testGame.checkForWin()).toEqual(true);
+    
   });
 });
