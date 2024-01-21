@@ -9,7 +9,31 @@
     <table id="board"></table>
   </div>
   <h2 id="end-message"></h2>
-  <button id="start">Start Game</button>
+  <form id="player-select">
+    <label for="p1-color">Player 1 color</label>
+    <select id="p1-color">
+      <option value="crimson">Red</option>
+      <option value="aqua">Blue</option>
+      <option value="gold">Yellow</option>
+      <option value="darkviolet">Purple</option>
+      <option value="deeppink">Pink</option>
+      <option value="springgreen">Green</option>
+    </select>
+
+    <label for="p2-color">Player 2 color</label>
+    <select id="p2-color">
+      <option value="aqua">Blue</option>
+      <option value="crimson">Red</option>
+      <option value="gold">Yellow</option>
+      <option value="darkviolet">Purple</option>
+      <option value="deeppink">Pink</option>
+      <option value="springgreen">Green</option>
+    </select>
+
+    <button type="button" id="start">Start game</button>
+    <div id="error-msg"></div>
+  </form>
+  <button id="restart">Play again?</button>
 
   <script src="connect4.js"></script>
 

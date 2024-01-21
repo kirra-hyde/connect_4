@@ -15,14 +15,6 @@
   border-radius: 50%;
 }
 
-.p1 {
-  background-color: crimson;
-}
-
-.p2 {
-  background-color: aqua;
-}
-
 /* column-top is table row of clickable areas for each column */
 
 #column-top td {
@@ -31,4 +23,8 @@
 
 #column-top td:hover {
   background-color: gold;
+}
+
+#restart {
+  display: none;
 }

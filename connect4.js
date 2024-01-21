@@ -1,16 +1,33 @@
 "use strict";
 
+/** Game Players
+ *
+ * Players have colors and player numbers.
+ * They're meant to be passed into Game objects.
+ */
+
+class Player {
+  constructor(color, num) {
+    if (!CSS.supports("background-color", color)) {
+      throw new Error(`${color} is not a valid color`);
+    }
+
+    this.color = color;
+    this.num = num;
+  }
+}
+
+
 /** Connect Four
  *
  * Player 1 and 2 alternate turns. On each turn, a piece is dropped down a
  * column until a player gets four-in-a-row (horiz, vert, or diag) or until
- * board fills (tie)
+ * board fills (tie).
  */
-
 
 class Game {
 
-  constructor(width = 7, height = 6) {
+  constructor(p1, p2, width = 7, height = 6) {
     if (!Number.isInteger(width) || width <= 0) {
       throw new Error("Width must be positive integer");
     }
@@ -21,16 +38,19 @@ class Game {
     this.width = width;
     this.height = height;
     this.board = this.makeBoard(); // array of rows, rows are arrays of cells (board[y][x])
-    this.currPlayer = 1; //active player: 1 or 2
+    this.p1 = p1;  //Player object
+    this.p2 = p2;  //Player object
+    this.currPlayer = p1; //active player: 1 or 2
     this.finished = false; //is the game over? true or false
 
     this.makeHtmlBoard();
   }
 
 
-  /** Create in-JS board structure, for logic.
+  /** makeBoard:
    *
-   * Will become the "board" property of Game instances.
+   * create in-JS board structure, for logic
+   * will become the "board" property of the Game object
    */
 
   makeBoard() {
@@ -44,13 +64,10 @@ class Game {
   }
 
 
-  /** Reset DOM.  Then, make HTML table with a row of column tops */
+  /** makeHtmlBoard: make HTML table with a row of column tops */
 
   makeHtmlBoard() {
     const htmlBoard = document.getElementById('board');
-    htmlBoard.innerHTML = "";
-    document.getElementById("end-message").innerHTML = "";
-    startButton.style.display = "none";
 
     // make row above game board and make it listen for clicks
     const top = document.createElement("tr");
@@ -93,14 +110,14 @@ class Game {
   }
 
 
-  /** placeInTable: update DOM to place piece into HTML table of board */
+  /** placeInTable: update DOM to place piece into HTML board */
 
   placeInTable(y, x) {
     const cell = document.getElementById(`cell-${y}-${x}`);
 
     const piece = document.createElement("div");
     piece.classList.add('piece');
-    piece.classList.add(`p${this.currPlayer}`);
+    piece.style.backgroundColor = this.currPlayer.color;
 
     cell.append(piece);
   }
@@ -129,7 +146,7 @@ class Game {
 
     // check for win
     if (this.checkForWin()) {
-      this.endGame(`Player ${this.currPlayer} won!`);
+      this.endGame(`Player ${this.currPlayer.num} won!`);
       return;
     }
 
@@ -140,7 +157,7 @@ class Game {
     }
 
     // switch players
-    this.currPlayer = (this.currPlayer === 1) ? 2 : 1;
+    this.currPlayer = (this.currPlayer === this.p1) ? this.p2 : this.p1;
   }
 
 
@@ -187,18 +204,64 @@ class Game {
   }
 
 
-  /** endGame: announce game end and disable clicks */
+  /** endGame: announce game end, disable clicks, display restart button */
 
   endGame(msg) {
     this.finished = true;
     const endBox = document.getElementById("end-message");
     endBox.innerText = msg;
-    startButton.innerText = "Play again?";
-    startButton.style.display = "block";
+    restart.style.display = "block";
+  }
+
+
+  /** startGame:
+   *
+   * validate that two different colors were selected in player selection form
+   * clear the player selection form from DOM
+   * create a Game object and 2 Player objects, passing in colors from the form
+  */
+
+  static startGame() {
+    const p1Color = document.getElementById("p1-color").value;
+    const p2Color = document.getElementById("p2-color").value;
+
+    const errorMessage = document.getElementById("error-msg");
+
+    if (p1Color === p2Color) {
+    errorMessage.innerText = "Player 1 and Player 2 must choose different colors";
+    return;
+    }
+
+    errorMessage.innerText = "";
+    const startScreen = document.getElementById("player-select");
+    startScreen.style.display = "none";
+
+
+    const p1 = new Player(p1Color, 1);
+    const p2 = new Player(p2Color, 2);
+    new Game(p1, p2);
   }
 }
 
 
 const startButton = document.getElementById("start");
-startButton.addEventListener("click", () => new Game());
+startButton.addEventListener("click", Game.startGame);
 
+const restartButton = document.getElementById("restart");
+restartButton.addEventListener("click", showSelectionScreen);
+
+
+/** showSelectionScreen:
+ *
+ * clear HTML board, clear game end message,
+ * hide restart button, display player selection screen
+ */
+
+function showSelectionScreen() {
+
+  document.getElementById("board").innerHTML = "";
+  document.getElementById("end-message").innerText = "";
+  restartButton.style.display = "none";
+  document.getElementById("player-select").style.display = "block";
+
+}
